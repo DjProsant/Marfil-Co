@@ -57,12 +57,12 @@ nav.scrolled{padding:13px 56px;background:rgba(8,8,8,.94);backdrop-filter:blur(2
 .hero-hint span{font-size:.56rem;letter-spacing:.35em;text-transform:uppercase;color:rgba(245,240,232,.45)}
 .scroll-line{width:1px;height:52px;background:linear-gradient(to bottom,var(--gold),transparent);animation:pulseLine 2s ease-in-out infinite}
 
-/* Mobile: autoplay + video completo sin recorte */
+/* Mobile: autoplay + video completo en su ratio 16:9 sin franjas negras */
 @media(max-width:768px){
-  .scroll-video-hero{height:100vh}
-  .scroll-video-sticky{position:relative}
-  .scroll-video-sticky video{object-fit:contain;background:#000}
-  .hero-overlay{background:rgba(0,0,0,.35)}
+  .scroll-video-hero{height:auto}
+  .scroll-video-sticky{position:relative;aspect-ratio:16/9}
+  .scroll-video-sticky video{object-fit:cover;background:transparent}
+  .hero-overlay{background:rgba(0,0,0,.45)}
 }
 @media(prefers-reduced-motion:reduce){.scroll-video-hero{height:100vh}}
 
