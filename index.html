@@ -35,6 +35,7 @@ nav.scrolled{padding:13px 56px;background:rgba(8,8,8,.94);backdrop-filter:blur(2
 /* ── SCROLL VIDEO HERO ── */
 .scroll-video-hero{height:500vh;position:relative}
 .scroll-video-sticky{position:sticky;top:0;height:100vh;width:100%;overflow:hidden}
+.hero-video-wrap{position:absolute;inset:0;overflow:hidden}
 .hero-side-bar{position:absolute;top:0;width:220px;height:100%;background:#000;z-index:3;pointer-events:none}
 .hero-side-bar.right{right:0}
 .hero-side-bar.left{left:0}
@@ -57,11 +58,13 @@ nav.scrolled{padding:13px 56px;background:rgba(8,8,8,.94);backdrop-filter:blur(2
 .hero-hint span{font-size:.56rem;letter-spacing:.35em;text-transform:uppercase;color:rgba(245,240,232,.45)}
 .scroll-line{width:1px;height:52px;background:linear-gradient(to bottom,var(--gold),transparent);animation:pulseLine 2s ease-in-out infinite}
 
-/* Mobile: títulos arriba → video → botones → scroll */
+/* Mobile: títulos arriba → video (con franjas) → botones → scroll */
 @media(max-width:768px){
   .scroll-video-hero{height:auto!important}
   .scroll-video-sticky{position:relative!important;height:auto!important;overflow:visible;display:flex;flex-direction:column;background:var(--black)}
-  .scroll-video-sticky video{position:relative;top:auto;left:auto;width:100%;height:auto;aspect-ratio:16/9;object-fit:cover;order:2}
+  .hero-video-wrap{position:relative;inset:auto;width:100%;order:2;aspect-ratio:16/9;overflow:hidden}
+  .scroll-video-sticky video{position:absolute;top:0;left:0;width:100%;height:100%;object-fit:cover}
+  .hero-side-bar{display:block;width:3cm}
   .hero-overlay{position:relative;inset:auto;order:1;background:var(--black);padding:72px 24px 16px;justify-content:center;align-items:center}
   .hero-tagline{margin-bottom:0}
   .hero-btns{position:relative;bottom:auto;left:auto;right:auto;order:3;padding:24px;background:var(--black);animation:none;opacity:1;transform:none}
@@ -289,8 +292,15 @@ footer{background:var(--black);border-top:1px solid var(--border);padding:40px 5
 <!-- HERO — SCROLL VIDEO -->
 <section class="scroll-video-hero" id="scroll-hero">
   <div class="scroll-video-sticky">
-    <video id="heroVideo" src="assets/hero_scrub.mp4"
-           playsinline muted preload="auto"></video>
+    <div class="hero-video-wrap">
+      <video id="heroVideo" src="assets/hero_scrub.mp4"
+             playsinline muted preload="auto"></video>
+      <div class="hero-side-bar left"></div>
+      <div class="hero-side-bar right"></div>
+      <div class="scroll-progress-bar">
+        <div class="scroll-progress-fill" id="progressFill"></div>
+      </div>
+    </div>
 
     <div class="hero-overlay" id="inicio">
       <span class="hero-label">Velas Artesanales Premium</span>
@@ -301,12 +311,6 @@ footer{background:var(--black);border-top:1px solid var(--border);padding:40px 5
     <div class="hero-btns">
       <a href="#coleccion" class="btn-gold">Ver Colección</a>
       <a href="#contacto" class="btn-ghost">Hacer Pedido</a>
-    </div>
-
-    <div class="hero-side-bar left"></div>
-    <div class="hero-side-bar right"></div>
-    <div class="scroll-progress-bar">
-      <div class="scroll-progress-fill" id="progressFill"></div>
     </div>
 
     <div class="hero-hint">
