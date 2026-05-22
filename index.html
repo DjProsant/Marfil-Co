@@ -46,7 +46,7 @@ nav.scrolled{padding:13px 56px;background:rgba(8,8,8,.94);backdrop-filter:blur(2
 .hero-title{font-family:'Cormorant Garamond',serif;font-size:clamp(3.8rem,10vw,8.5rem);font-weight:300;color:var(--cream);line-height:.88;letter-spacing:-.02em;margin-bottom:10px;animation:fadeUp 1s .7s both}
 .hero-title em{font-style:italic;color:var(--gold)}
 .hero-tagline{font-family:'Cormorant Garamond',serif;font-size:clamp(1rem,2vw,1.5rem);font-style:italic;color:rgba(245,240,232,.7);letter-spacing:.1em;margin-bottom:48px;animation:fadeUp 1s .9s both}
-.hero-btns{display:flex;gap:14px;justify-content:center;flex-wrap:wrap;animation:fadeUp 1s 1.1s both}
+.hero-btns{position:absolute;bottom:120px;left:0;right:0;display:flex;gap:14px;justify-content:center;flex-wrap:wrap;z-index:3;animation:fadeUp 1s 1.1s both;padding:0 24px}
 .btn-gold{background:var(--gold);color:var(--black);padding:15px 50px;font-family:'Montserrat',sans-serif;font-size:.67rem;font-weight:600;letter-spacing:.22em;text-transform:uppercase;text-decoration:none;display:inline-block;transition:all .3s}
 .btn-gold:hover{background:var(--gold-l);transform:translateY(-2px)}
 .btn-ghost{background:transparent;color:var(--cream);padding:15px 50px;border:1px solid rgba(245,240,232,.28);font-family:'Montserrat',sans-serif;font-size:.67rem;letter-spacing:.22em;text-transform:uppercase;text-decoration:none;display:inline-block;transition:all .3s}
@@ -57,12 +57,15 @@ nav.scrolled{padding:13px 56px;background:rgba(8,8,8,.94);backdrop-filter:blur(2
 .hero-hint span{font-size:.56rem;letter-spacing:.35em;text-transform:uppercase;color:rgba(245,240,232,.45)}
 .scroll-line{width:1px;height:52px;background:linear-gradient(to bottom,var(--gold),transparent);animation:pulseLine 2s ease-in-out infinite}
 
-/* Mobile: autoplay + video completo en su ratio 16:9 sin franjas negras */
+/* Mobile: títulos arriba → video → botones → scroll */
 @media(max-width:768px){
   .scroll-video-hero{height:auto}
-  .scroll-video-sticky{position:relative;aspect-ratio:16/9}
-  .scroll-video-sticky video{object-fit:cover;background:transparent}
-  .hero-overlay{background:rgba(0,0,0,.45)}
+  .scroll-video-sticky{position:relative;height:auto;display:flex;flex-direction:column;background:var(--black)}
+  .scroll-video-sticky video{position:relative;top:auto;left:auto;width:100%;height:auto;aspect-ratio:16/9;object-fit:cover;order:2}
+  .hero-overlay{position:relative;inset:auto;order:1;background:var(--black);padding:72px 24px 28px;justify-content:center;align-items:center}
+  .hero-btns{position:relative;bottom:auto;left:auto;right:auto;order:3;padding:28px 24px;background:var(--black);animation:none;opacity:1;transform:none}
+  .hero-hint{position:relative;bottom:auto;left:auto;transform:none;order:4;padding:8px 0 28px;background:var(--black);animation:none;opacity:1}
+  .scroll-progress-bar{display:none}
 }
 @media(prefers-reduced-motion:reduce){.scroll-video-hero{height:100vh}}
 
@@ -292,10 +295,11 @@ footer{background:var(--black);border-top:1px solid var(--border);padding:40px 5
       <span class="hero-label">Velas Artesanales Premium</span>
       <h1 class="hero-title">Marfil<em>&amp;Co</em></h1>
       <p class="hero-tagline">Cera Escultural &amp; Arte</p>
-      <div class="hero-btns">
-        <a href="#coleccion" class="btn-gold">Ver Colección</a>
-        <a href="#contacto" class="btn-ghost">Hacer Pedido</a>
-      </div>
+    </div>
+
+    <div class="hero-btns">
+      <a href="#coleccion" class="btn-gold">Ver Colección</a>
+      <a href="#contacto" class="btn-ghost">Hacer Pedido</a>
     </div>
 
     <div class="hero-side-bar left"></div>
