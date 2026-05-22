@@ -57,8 +57,13 @@ nav.scrolled{padding:13px 56px;background:rgba(8,8,8,.94);backdrop-filter:blur(2
 .hero-hint span{font-size:.56rem;letter-spacing:.35em;text-transform:uppercase;color:rgba(245,240,232,.45)}
 .scroll-line{width:1px;height:52px;background:linear-gradient(to bottom,var(--gold),transparent);animation:pulseLine 2s ease-in-out infinite}
 
-/* Mobile: autoplay */
-@media(max-width:768px){.scroll-video-hero{height:100vh}.scroll-video-sticky{position:relative}}
+/* Mobile: autoplay + video completo sin recorte */
+@media(max-width:768px){
+  .scroll-video-hero{height:100vh}
+  .scroll-video-sticky{position:relative}
+  .scroll-video-sticky video{object-fit:contain;background:#000}
+  .hero-overlay{background:rgba(0,0,0,.35)}
+}
 @media(prefers-reduced-motion:reduce){.scroll-video-hero{height:100vh}}
 
 @keyframes fadeUp{from{opacity:0;transform:translateY(26px)}to{opacity:1;transform:translateY(0)}}
@@ -280,7 +285,7 @@ footer{background:var(--black);border-top:1px solid var(--border);padding:40px 5
 <!-- HERO — SCROLL VIDEO -->
 <section class="scroll-video-hero" id="scroll-hero">
   <div class="scroll-video-sticky">
-    <video id="heroVideo" src="assets/hero-v2.mp4"
+    <video id="heroVideo" src="assets/hero_scrub.mp4"
            playsinline muted preload="auto"></video>
 
     <div class="hero-overlay" id="inicio">
