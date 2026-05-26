@@ -770,37 +770,96 @@ footer{background:var(--black);border-top:1px solid var(--border);padding:40px 5
   });
   links.querySelectorAll('a').forEach(a=>a.addEventListener('click',()=>{open=false;links.style.cssText='display:none'}));
 
-  // ── SCROLL VIDEO ──
-  const video   = document.getElementById('heroVideo');
-  const hero    = document.getElementById('scroll-hero');
-  const fill    = document.getElementById('progressFill');
+  // ── SCROLL VIDEO — seek chain + ImageBitmap cache ──
+  const video = document.getElementById('heroVideo');
+  const hero  = document.getElementById('scroll-hero');
+  const fill  = document.getElementById('progressFill');
   if(video && hero){
-    const isMobile  = window.matchMedia('(max-width:768px)').matches;
-    const reduced   = window.matchMedia('(prefers-reduced-motion:reduce)').matches;
+    const isMobile = window.matchMedia('(max-width:768px)').matches;
+    const reduced  = window.matchMedia('(prefers-reduced-motion:reduce)').matches;
     if(isMobile || reduced){
       video.autoplay=true; video.loop=true; video.play().catch(()=>{});
     } else {
+      // Canvas que reemplaza visualmente al video (object-fit:cover manual)
+      const canvas = document.createElement('canvas');
+      const ctx    = canvas.getContext('2d',{alpha:false});
+      Object.assign(canvas.style,{
+        position:'absolute',top:'50%',left:'50%',
+        transform:'translate(-50%,-50%)',
+        minWidth:'100%',minHeight:'100%',
+        width:'auto',height:'auto',
+        pointerEvents:'none'
+      });
+      video.parentNode.insertBefore(canvas, video);
+      video.style.opacity='0';
       video.pause();
-      let ready=false;
+
       video.addEventListener('loadedmetadata',()=>{
-        ready=true;
-        video.currentTime=0.001; // fuerza renderizado del primer frame
+        canvas.width  = video.videoWidth;
+        canvas.height = video.videoHeight;
+        video.currentTime = 0.001;
       });
       video.load();
-      let tick=false;
-      function updateVideo(){
-        if(!ready||!video.duration) return;
-        const rect=hero.getBoundingClientRect();
-        const scrolled=-rect.top;
-        const scrollable=hero.offsetHeight-window.innerHeight;
-        if(scrolled<=0){video.currentTime=0;if(fill)fill.style.width='0%';return}
-        if(scrolled>=scrollable){video.currentTime=video.duration;if(fill)fill.style.width='100%';return}
-        const p=scrolled/scrollable;
-        video.currentTime=p*video.duration;
-        if(fill)fill.style.width=(p*100)+'%';
+
+      // LRU cache de ImageBitmap
+      const CACHE_MAX = 60;
+      const cache = new Map();
+      function cacheSet(fi, bm){
+        if(cache.size >= CACHE_MAX){
+          const k = cache.keys().next().value;
+          cache.get(k)?.close?.();
+          cache.delete(k);
+        }
+        cache.set(fi, bm);
       }
-      window.addEventListener('scroll',()=>{if(!tick){requestAnimationFrame(()=>{updateVideo();tick=false;});tick=true;}},{passive:true});
-      window.addEventListener('resize',updateVideo);
+
+      // Seek chain
+      let targetTime = 0, seeking = false;
+      async function onSeeked(){
+        try {
+          const bm = await createImageBitmap(video);
+          const fi = Math.round(video.currentTime * 24);
+          cacheSet(fi, bm);
+          ctx.drawImage(bm, 0, 0, canvas.width, canvas.height);
+        } catch(e){}
+        if(Math.abs(video.currentTime - targetTime) > 1/48){
+          video.currentTime = targetTime; // encadena siguiente seek
+        } else {
+          seeking = false;
+        }
+      }
+      video.addEventListener('seeked', onSeeked);
+
+      function seekTo(t){
+        targetTime = t;
+        if(!seeking){ seeking=true; video.currentTime=t; }
+      }
+
+      // Scroll handler
+      function getProgress(){
+        const rect      = hero.getBoundingClientRect();
+        const scrolled  = -rect.top;
+        const scrollable = hero.offsetHeight - window.innerHeight;
+        if(scrolled <= 0) return 0;
+        if(scrolled >= scrollable) return 1;
+        return scrolled / scrollable;
+      }
+
+      function onScroll(){
+        if(!video.duration) return;
+        const p  = getProgress();
+        const t  = p * video.duration;
+        const fi = Math.round(t * 24);
+        if(fill) fill.style.width = (p*100)+'%';
+        if(cache.has(fi)) ctx.drawImage(cache.get(fi), 0, 0, canvas.width, canvas.height);
+        seekTo(t);
+      }
+
+      let raf=false;
+      window.addEventListener('scroll',()=>{
+        if(!raf){ requestAnimationFrame(()=>{ onScroll(); raf=false; }); raf=true; }
+      },{passive:true});
+      window.addEventListener('resize', onScroll);
     }
   }
 
